@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0059)http://www.ics.uci.edu/~fowlkes/class/cs116/hwk4/index.html -->
+<html class="gr__ics_uci_edu"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>HW4: </title>
+  </head>
+  <body data-gr-c-s-loaded="true">
+   <table><tbody><tr><td width="800">
+    <h1>HW4: Object Detection </h1>
+    <h3> Due Monday, March 6th in EEE DropBox at 11:59 pm </h3>
+    <hr>
+
+<a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hwk4/index.html"> <img width="500" src="./pics/detection.jpg"> </a>
+<font size="-1"><br>
+</font>
+<br>
+
+<p>
+</p><p>
+In this assignment, you will develop an object detector based on gradient 
+features and sliding window classification.
+
+The following directory contains the some skeleton code to get you started 
+along with some test images:
+</p><ul>
+<li><a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hwk4/downloads">Downloads</a>
+</li></ul>
+
+<h4>Programming: [80 points]</h4>
+<ol>
+<li>
+<b>Image Gradient: [20 points]</b><br>
+<p>
+Write a function that takes a grayscale image as input and returns two arrays
+the same size as the image, the first of which contains the magnitude of the
+image gradient at each pixel and the second containing the orientation.
+</p><blockquote><tt><pre>[mag,ori] = mygradient(I)
+</pre></tt></blockquote>
+
+Your function should filter the image with the simple x- and y-derivative
+filters described in class.  Once you have the derivatives you can compute the
+orientation and magnitude of the gradient vector at each pixel.  You should use
+<tt>imfilter</tt> with the <tt>'replicate'</tt> option in order to nicely
+handle the image boundaries.<p>
+
+
+</p></li><li>
+<b>Histograms of Gradient Orientations: [30 points]</b><br>
+<p>
+Write a function that computes gradient orientation histograms over each 8x8
+block of pixels.  Your function should bin the orientation into 9 equal sized
+bins between <b>-pi/2</b> and <b>pi/2</b>. The input of your function will
+be an image of size HxW.  The output should be a three-dimensional array <tt>ohist</tt>
+whose size is (H/8)x(W/8)x9 where <tt>ohist(i,j,k)</tt> contains the count of
+how many edges of orientation <b>k</b> fell in block <b>(i,j)</b>.  </p><p>
+
+To determine if a pixel is an edge, we need to choose some threshold.  I
+suggest using a threshold that is a tenth the maximum gradient magnitude in the image
+(i.e. <tt>thresh = 0.1*max(mag(:))</tt>).  Since each 8x8 block will contain a
+different number of edges, you should normalize the resulting histogram for each
+block to sum to 1 (i.e., <tt>sum(ohist,3)</tt> should be 1 at every block location).
+</p><p>
+
+I would suggest your function loops over the orientation bins.  For each
+orientation bin you'll need to identify those pixels in the image whose
+magnitude is above the threshold and whose orientation falls in the given bin. 
+You can do this easily in MATLAB using logical operations in order to generate
+an array the same size as the image that contains <b>1</b>s at the locations of
+every edge pixel that falls in the given orientation bin and is above threshold.  
+To collect up pixels in each 8x8 spatial block you can use the function
+<tt>im2col(..,[8 8],'distinct')</tt>.  The <tt>im2col</tt> function will
+automatically pad out the image to a multiple of 8 which is convenient.
+
+</p></li><li>
+<b>Detection: [30 points]</b><br>
+<p>
+Write a function that takes a template and an image and returns the top
+detections found in the image.  Your function should have the prototype
+</p><pre>[x,y,score] = detect(I,template,ndet)</pre> where <tt>ndet</tt> is the
+number of detections to return.<p>
+
+In your function you should first compute the histogram-of-gradient-orientation
+feature map for the image, then correlate the template with the feature map.
+Since the feature map and template are both three dimensional, you will want to
+filter each orientation separately and then sum up the results to get the final
+response. This final response map will be of size (H/8)x(W/8).</p><p>
+
+When constructing the list of top detections, your code should implement
+non-maxima suppression.  You can do this by sorting the responses in descending
+order of their score. Every time you add a detection to the list to return,
+check to make sure that the location of this detection is not too close to any
+of the detections already in the output list.</p><p>
+
+Your code should return the locations of the detections in terms of the
+original image pixel coordinates so if your detector had a high response at
+block <tt>(i,j)</tt> then you should return <tt>(8*i,8*j)</tt> as the pixel
+coordinates.</p><p>
+
+</p></li></ol>
+<h4>Writeup: [20 points]</h4>
+
+<ol>
+<p></p><li> 
+Test your gradient code by running it on an image of your choice.  Visualize
+the resulting gradient magnitude and orientation using <tt>imagesc</tt>.
+Make sure and use <tt>colorbar</tt> and a non-grayscale colormap (e.g.,
+<tt>colormap jet</tt>) in order to visualize the orientation values and
+<tt>title</tt> to put informative titles on your plots.  Include a plot of
+both the magnitude and the orientation in your writeup for some test image.
+
+<p></p></li><li> 
+Test your detection code using the provided script and modifying it as
+necessary.  The script loads in a training image and a test image.  You can
+click on one or more patches of the training image.  The script then builds an
+average template using the histogram feature map.  Finally the script calls
+your detect function using this average template to detect objects in the test
+image.  <p>
+
+In your writeup should include (a) an example result on the provided test image
+along with a visualization of the patches you clicked on to train the template
+(b) results of training a template on a different test and training image of
+your choosing (e.g. feel free to experiment with detecting cat faces, hands,
+cups, chairs or some other type of object).  For the best result, you will want
+to test on images where the object is the same size as your template.
+(c) a brief (1 paragraph) discussion of where the detector works well and when
+it fails.  Describe some ways you might be able to make it better.</p><p>
+
+</p></li></ol>
+
+<h4>Matlab Tips</h4>
+
+<ol>
+
+<p></p><li> Useful functions for this assignment:
+<pre>im2double,imshow,ginput,imfilter,sort,ind2sub,im2col,atan</pre>
+
+</li><li> The script provided for building the template makes a hard-coded
+assumption that the template dimension is 128x128 pixels. You may want to
+change this depending on the aspect ratio of the object you are interested in
+detecting or better yet, make it more flexible so the user can actually draw
+a box around the desired object to detect.
+
+
+</li></ol>
+
+<h4>Extra-credit</h4>
+As detailed in the <a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hw_guide.html"> guidelines</a>, any
+project handed by 11:59 pm on the previous day will receive 5% 
+extra credit.
+<br>
+<br>
+<br>
+<p></p>
+</td>
+</tr>
+</tbody></table>
+
+</body></html>
