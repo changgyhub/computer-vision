@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- saved from url=(0059)http://www.ics.uci.edu/~fowlkes/class/cs116/hwk1/index.html -->
+<html class="gr__ics_uci_edu"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>HW1</title>
+  </head>
+
+  <body data-gr-c-s-loaded="true">
+  <center>
+  <table width="800">
+  <tbody><tr><td>
+    <h1>General HW Submission Instructions</h1>
+    Please follow the following submission instructions.<br>
+    I reserve the right to simply refuse to grade any submissions that don't adhere to this format  :-)<br>
+    <ul>
+    <li> All homework must be submitted electronically to the EEE system.
+    </li><li> Please submit <b>two</b> files for each homework, a <b>pdf</b> containing answers to any 
+    written questions and descriptions of your results and a <b>zip</b> file containing a single
+    directory <b>firstname_lastname</b> which contains your code. 
+    </li><li> PLEASE DO NOT SUBMIT .doc, .docx  or other document file formats.
+    </li><li> Homework must be submitted before midnight (11:59pm) to the given folder in the EEE assignment dropbox.
+    </li><li> <b>No late homeworks will be accepted</b>, so please turn it whatever
+    you have.  However, if you submit your homework 24 hours early, you will
+    automatically receive extra credit.
+    </li><li> You will be graded on clarity of your results; make sure any images
+    are displayed with reasonable resolution and color axes and answers are
+    clear and concise.
+    </li></ul>
+    Please read the additional guidelines on homework submission <a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hw_guide.html">here</a>
+    <hr>
+
+    <h1>HW1</h1>
+
+    <h2> Due: 1/20 11:59pm EEE Dropbox</h2>
+
+
+    <ol>
+        <h3> MATLAB Warmup [20 points]</h3>
+        <p> One goal of this problem set is to become familiar with basic
+        MATLAB commands, practice manipulating vectors and matrices, and try
+        out basic image display and plotting functions. If you are unsure what
+        a MATLAB function does, check the reference manual (at the command
+        line, type "help" and then the command name).
+
+       </p><p></p><li> You can acquire a student version of MATLAB here <a href="http://laptops.eng.uci.edu/software-installation/matlab">[UCI Student Version]</a>
+           <p></p></li><li> If you haven't used MATLAB before, you may find these <a href="http://www.ics.uci.edu/~fowlkes/class/cs116/matlab.html">video tutorials</a> useful.  I recommend working
+           through this concise MATLAB <a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hwk1/MATLABTutorialCode.html">tutorial</a>. Open an interactive session
+           in MATLAB and test the commands in the tutorial by typing them at the
+           prompt.  Pay particular attention to the ways in which you can
+           access subindices of arrays, this gets used over and over again in MATLAB.
+
+  <p></p></li><li> Describe (in words where appropriate) the result of each of the
+  following MATLAB commands. Use the help command as needed, but try to
+  determine the output <em>without</em> entering the commands into MATLAB. Submit
+  your description of the commands (not a screen-shot!)
+
+	<ol type="a">
+	    <p></p><li> &gt;&gt; a = [5:15];
+	    <br> &gt;&gt; b = a([1:3:end]);
+	    <p></p></li><li> &gt;&gt; f = [1501:2000];
+	    <br> &gt;&gt; g = find(f &gt; 1850);
+	    <br> &gt;&gt; h = f(g);
+	    <p></p></li><li> &gt;&gt; x = 22.*ones(1,10);
+	    <br> &gt;&gt; y = sum(x);
+	    <p></p></li><li> &gt;&gt; a = [1:100];
+	    <br> &gt;&gt; b = a([end:-1:1]);
+	</li></ol>
+
+  <p></p></li><li> Write a script which does the following.  First, use "imread" to load
+  in a <em>grayscale</em> image of your choice.  If you prefer, you can load in
+  a color image and then convert it to grayscale using the <i>rgb2gray</i>
+  function. By default, MATLAB loads images a integer datatypes.  <u>For this
+  class we will always be performing numerical operations on the pixel values
+  so it is best to convert them to a floating point representation.</u>  Use
+  the <i>im2double</i> to convert your loaded image from an <i>uint8</i> to a
+  <i>double</i> datatype.  All together this looks like:
+  <blockquote><tt><pre>  I = imread('myfile.jpg'); %grayscale
+     -or-
+  I = rgb2gray(imread('myfile.jpg')); %if the image is color 
+
+  I = im2double(I); %covert to double.
+  </pre></tt>
+  </blockquote>
+  
+  Now create an array <i>A</i> that contains the pixels in a 100x100 sub-region of your image. 
+  Write code to perform the following operations on this sub-image.  Each of these
+  can be written as just a couple lines of code without using any for-loops.
+	<ol type="a">
+	    <p></p><li> Sort all the intensities in <i>A</i>, put the result in a single 10,000-dimensional vector <i>x</i>.  Plot this sorted vector in a figure.
+	    <p></p></li><li> Display a figure showing a histogram of <i>A</i>'s intensities with 32 bins using the <i>hist</i> function.
+	    <p></p></li><li> Create and display a new binary image the same size as <i>A</i>, which is white
+	    wherever the intensity in A is greater than a threshold <i>t</i>, and black everywhere
+	    else. Choose a value for the threshold which makes the image roughly half-white and
+      half-black.
+	    <p></p></li><li> Generate a new image (matrix), which is the same as <i>A</i>, but with <i>A</i>'s mean
+	    intensity value subtracted from each pixel. After subtracting the mean, set any negative values to 0
+      and display the result.
+	    <p></p></li><li> Let <i>y</i> be the vector: y = [1:6]. Use the reshape command to form a new matrix <i>z</i>
+	    whose first column is [1, 2, 3]', and whose second column is [4, 5, 6]'.
+	    <p></p></li><li> Use the <i>min</i> and <i>find</i> functions to set a variable <i>x</i> to the minimum value that occurs
+	    in <i>A</i>, and set <i>r</i> to the row it occurs in and <i>c</i> to the column that this value occurs in.
+      If there is more than one minima then return the first one.
+	    <p></p></li><li> Let <i>v</i> be the vector: v = [1 8 8 2 1 3 9 8]. Using the <i>unique</i> function,
+	    compute the total <b>number</b> of unique values that occur in <i>v</i>.
+	</li></ol>
+
+    <h3> Programming: average images [40 points]</h3>
+	<p></p></li><li> Write a program that will load a a collection of images, compute the pixelwise average of the images,
+  and display the results.
+      
+    <p> The images below give some examples that were generated by averaging "100 unique
+      commemorative photographs culled from the internet" by Jason Salavon. Your program will do something similar.
+    </p><p><img width="500" src="./pics/avg.jpg">
+
+    </p><p> Download the images provided on the course website for this assignment
+    <a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hwk1/averageimage_data.zip"> averageimage_data.zip</a>. There are two
+    sets, set1 and set2. Notice that they are all the same size within a single
+    set.  
+    
+    </p><p>Write a MATLAB script to load in one of the sets of images. You can use
+    the <b>dir</b> command to get the list of files in the directory.  As you
+    load in the images, you should compute an average image.  Color images are
+    represented by a 3-dimensional array of size (HxWx3) where the third
+    dimension indexes the red, green and blue channels.  You will want to
+    compute a running average of the red, green and blue slices and then
+    recombine the results to get your final average color image.
+    
+    </p><p> Run your code on both sets of images, separately. Include in your
+    write-up the resulting images and briefly explain why the results look the
+    way they do.
+    
+    </p><p> This code fragment can be used to loop through all the image files
+    in one directory (here assuming your images are in a sub-directory named
+    images, with .jpg extension):
+    </p><pre>      filelist = dir('images/*.jpg');
+      for i=1:length(filelist)
+               imname = ['images/' filelist(i).name];
+               nextim = imread(imname);
+               % convert nextim to double and add it to your running average 
+      . . .
+      end
+    </pre>
+      
+
+    <h3> Programming: color sensor demosaicing [40 points]</h3>
+	<p></p></li><li>
+    As discussed in class, there are several steps to transform raw sensor
+    measurements into nice looking images. These steps include Demosaicing,
+    White Balancing and Gamma Correction.  In this problem we will implement
+    the demosaicing step.  (see Szeliski Chapter 2.3)
+
+    The following zip file contains raw images from a Canon 20D camera as well
+    as corresponding JPEG images from the camera (<tt>*.JPG</tt>).  The raw
+    image files (<tt>*.CR2</tt>) have been converted to 16-bit PGM images
+    (<tt>*.pgm</tt>) using <a href="http://www.cybercom.net/~dcoffin/dcraw/">
+    David Coffin's <tt> dcraw </tt> program</a>. These PGM images can be read
+    into MATLAB using the <tt>imread</tt> command.
+    <br>
+    <br>
+    Download the data here: <a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hwk1/demosaic_data.zip">demosaic_data.zip</a>
+    <br> 
+	
+    <div style="float:right; padding:10px; text-align:right;">
+      <img style="border:0px; padding:5px;" src="./pics/3shotcm_figure1.jpg"><br>
+      <font size="-1">Bayer RGGB mosaic.</font>
+    </div>
+
+    <p> The raw image has just one value per pixel.  The sensor is covered with
+    a filter array that modifies the sensitivity curve of each pixel.  There
+    are three types of filters:  "red", "green", and "blue", arranged in the
+    following pattern repeated from the top left corner:
+	
+	
+	</p><blockquote><pre>R G . . .
+G B
+.
+.
+.
+	  </pre></blockquote>
+	
+  <p>Your job is to compute the missing color values at each pixel to produce a
+  full RGB image (3 values at each pixel location).  For example, for each
+  "green" pixel, you need to compute "blue" and "red" values.  Do this by
+  interpolating values from adjacent pixels using the linear interpolation
+  scheme we described in class. 
+  
+      
+    </p><blockquote><tt><pre>    function [J] = mydemosaic(I)
+    %mydemosaic - demosaic a Bayer RG/GB image to an RGB image
+    %
+    % I: RG/GB mosaic image  of size  HxW
+    % J: RGB image           of size  HxWx3
+	  </pre></tt></blockquote>
+
+    <p>
+    Use <tt>IMG_1308</tt> for the writeup; if you like you may use other
+    images in addition for illustration.  Since the images are so large,
+    choose the upper-left 500x500 pixel sub-block for illustrations 
+
+    Show the original raw image in grayscale and the resulting RGB image 
+    after demosaicing.  The correctly demosaiced image will appear darker
+    than the JPG.  In your write up, explain why this is the case.
+
+    </p><blockquote><tt><pre>    I = im2double(imread('IMG_1308.pgm'));
+    figure(1); clf; imshow(I(1:500,1:500));
+    J = mydemosaic(I(1:500,1:500));
+    figure(2); clf; imshow(J);
+    </pre></tt></blockquote>
+
+    Note 1: The MATLAB image processing toolbox contains a demosaic function
+    but you are to write your own.<p>
+  
+    Note 2: Try not to write any loops for this computation; use the
+    <tt>imfilter</tt> function instead with the appropriate choice of 
+    filter.</p><p>
+
+    Note 3: If your machine has very limited memory, you may run into some
+    issues processing the whole image.  The above code snippet just uses a
+    500x500 block from the upper left corner</p><p>
+  </p></li></ol>
+
+<hr>
+  <h3>To submit</h3>
+    Your submission for this assignment should consist of a:
+    <ol>
+    <li> writeup in <b>pdf</b> format containing results and discussion for all parts of the assignment
+    </li><li> a script <b>warmup.m</b> containing code for the MATLAB warmup
+    </li><li> a script <b>average_images.m</b> containing code to average the
+    images. 
+    </li><li> a function <b>mydemosaic.m</b> that performs demosaicing.
+    </li></ol>
+    Please <b>do not</b> include the input images for the image averaging or demosiacing, just your code.
+
+<hr>
+  <h3>Some MATLAB Hints</h3>
+    
+  <ol>
+	<p></p><li> Put each function in its own file using the same name for the
+	file and the function.  Document the function with a 1-line summary,
+	and document each input and output argument.
+    
+  <p></p></li><li> Be sure to do the necessary typecasting (e.g. changing uint8 to
+  double) when working with or displaying the images. 
+  
+  <p></p></li><li> If an image is scaled appropriately you can use <tt>imshow</tt> to
+  view a grayscale or RGB <i>image</i>.  If you are viewing <i>data</i>, then
+  always use <tt>imagesc</tt> which automatically scales the range of values 
+  to be visible.  
+	
+  <p></p></li><li> When using <tt>imagesc</tt>, always show the colorbar and use a
+  sensible colormap.  You can change the colormap with the <tt>colormap</tt>
+  command.  The <tt>gray</tt>, <tt>jet</tt>, and <tt>hsv</tt> colormaps are the
+  most useful.
+	
+	<p></p></li><li> Use <tt>imwrite</tt> to write an image to a file.  If you want
+	to create an image of a figure window, either use a screen capture
+	utility or use the <tt>print</tt> command.
+	
+	<p></p></li><li> Strings use single quotes.  Double quotes are not used in matlab.
+	
+	<p></p></li><li> Useful MATLAB functions for this assignment:
+
+	<tt>
+	<ul>
+	  <li> help (I still use it all the time after 16 years of using matlab!)
+	  </li><li> figure, clf, close
+	  </li><li> imread, imwrite
+	  </li><li> im2double, rgb2gray
+	  </li><li> imshow, imagesc
+	  </li><li> colorbar, colormap gray, colormap jet
+	  </li><li> imfilter
+	  </li><li> imcrop
+	  </li><li> getpts
+	  </li><li> linspace, hist, cumsum, isempty
+	  </li><li> plot
+    </li><li>title, subplot, dir.
+	  </li><li> min, max
+	</li></ul>
+  </tt>
+  </li></ol>
+
+
+
+    <hr>
+    </td></tr>
+    </tbody></table>
+    </center>
+  
+
+
+
+</body></html>

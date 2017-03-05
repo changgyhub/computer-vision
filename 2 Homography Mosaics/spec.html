@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0059)http://www.ics.uci.edu/~fowlkes/class/cs116/hwk2/index.html -->
+<html class="gr__ics_uci_edu"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>HW2: </title>
+  </head>
+  <body data-gr-c-s-loaded="true">
+    <h1>HW2: Homography mosaics </h1>
+    <h3> Due Monday, Febuary 6th in EEE DropBox at 11:59 pm </h3>
+    <hr>
+ <table><tbody><tr><td width="800">
+<a href="./pics/window.png"> <img width="800" src="./pics/window.png"> </a>
+<font size="-1"><br>
+Mosaic of 5 images aligned with homographies (from David Martin)
+</font>
+<br>
+
+<p>
+</p><p>
+In this assignment, you will extend the field of view of a camera by forming a
+mosaic from multiple photographs. 
+
+When images are taken with same optical center, they can be aligned with a
+homography transformation. To estimate the homography, you'll need at least
+4 pairs of corresponding points in the overlap region. You'll mark these points
+manually.  In a future lecture we will discuss some methods for finding them
+automatically.
+
+The following directory contains the source images for alignment, along with
+some code to get started.  
+</p><ul>
+<li><a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hwk2/downloads">Downloads</a>
+</li></ul>
+You do not have to use my code, it is just for inspiration.
+
+<h4>Programming: [80 points]</h4>
+<ol>
+<li>
+<b>Warping: [35 points]</b><br>
+<p>
+The first image in each example provided is the central image.  It's simplest
+to construct a mosaic from a central image and a set of peripheral images,
+since we then need to find just one homography for each peripheral image.  Use
+MATLABs <tt>cpselect</tt> and <tt>cpcorr</tt> functions to manually select and
+refine at least 4 pairs of corresponding points in each overlap region between
+the central and peripheral images.  These points should be located on
+distinctive locations that you can easily identify between the images such as
+high contrast corners.
+
+</p><p>
+Next, compute the homography using linear least squares for each set of
+correspondences to provide the mapping from points in the central images and
+points in the peripheral images.  I suggest you write two functions to do
+this.  One which estimates the transformation matrix H given pairs of points
+and another which applies the transformation to a set of points.
+
+</p><blockquote><tt><pre>function [H] = computeHomography(x1,y1,x2,y2)
+function [x2,y2] = applyHomography(H,x1,y1)
+</pre></tt></blockquote>
+
+Note that if the matrix <tt>H</tt> maps (x1,y1) to (x2,y2), then the inverse
+mapping is given simply by inverting the matrix.  So applying the homography
+<tt>inv(H)</tt> will map (x2,y2) back to (x1,y1).
+
+
+<p>
+We will use the central image's coordinate system for the final mosaic.  You
+first need to figure out how big the final mosiac will be.  You can accomplish
+this by determining where the corners of each source image will be mapped to in
+the final mosaic (using your applyHomography function) and then use min/max to
+determine the left-most, right-most, top-most and bottom-most points across all
+of the warped images.    After this step you will have determined that all the
+warped image pixels from all the images will fall inside some rectangular region
+(xmin,ymin)-(xmax,ymax).  Note that these coordinates will with respect to your
+central image. For example, xmin will be a negative value if some of the images
+in your mosaic are mapped to the left of your central image.
+
+</p><p>
+Generate the coordinates of all the pixels for you final mosaic (I suggest
+using <tt>meshgrid</tt>).  In order to determine the color for each of these
+pixels, you should first apply the inverse of each homography in order to
+determine their coordinates with respect to the original source images.  You
+can then use the <tt>interp2</tt> to extract the color values for the pixels
+from the source image.  For each source image, this will result in an image the
+size of the final mosaic containing the warped version. <tt>interp2</tt> will
+set the value of any pixels that are outside the source image to
+<tt>NaN</tt>.</p><p>
+
+NOTE: If you are running into memory limits, you should downsample the images
+when you load them in (use <tt>imresize</tt>) to make things more manageable
+and run faster.
+
+</p><p>
+
+The figure below shows examples of warped images.  Note that the black pixels
+were mapped outside the source image. interp2 will fill in NaN for those
+pixels.  After warping I replaced these values with zeros in order to display
+the warped images using the following bit of code:
+</p><pre>mask = ~isnan(Iwarped);
+Iwarped(~mask) = 0;
+</pre>
+<br>
+<br>
+
+<a href="./pics/warped.png"> <img width="800" src="./pics/warped.png"> </a>
+<font size="-1"><br>
+Examples of individual images after they have been warped but 
+prior to being blended together.
+</font>
+<br>
+<br>
+
+</li><li>
+<b>Blending: [35 points]</b><br>
+<p>
+Now that you have generated the individual warped images, we need to blend
+them together into the final mosaic image.  Use <tt>isnan(I)</tt> to get a mask
+for each one that tells you which pixels are valid and which are invalid. </p><p>
+
+The simplest approach is to paste down the pixels from each image in turn.
+However, as we discussed in class this can lead to bad artifacts.  Instead you
+should create a smooth blend between the images in the regions where they
+overlap. To receive full credit, you must implement some type of weighted
+blending. </p><p>
+
+To create a blend, first compute a alpha mask for each image which is the same
+size as the target output with 1s where you have values from that image (i.e.
+using the isnan(I) trick).  In order to feather the edges of the mask, you can
+blur them with a Gaussian filter.  I suggest using <tt>imfilter</tt> and
+<tt>fspecial</tt>.  Since more than one image can overlap at a given location,
+you will need to normalize these alpha maps by the sum of the alphas across all
+images at that location.</p><p>
+
+To create the Gaussian filter, <tt>fspecial</tt> takes two arguments, the 
+size of the returned filter, and sigma, the width of the Gaussian.
+You will need to experiment with the parameter sigma in order to get good
+featering of the edges.  As you make sigma larger, you will also need to 
+increase the size of the filter itself to match so that the Gaussian doesn't
+get cut off.</p><p>
+
+NOTE: If you simply blur the binary alpha mask for an image, you will will end
+up with non-zero values outside of the support of a warped image which will
+cause problems when you composite them (e.g., black bands around the edge of the
+image).  To get a good result, you will need to find a way to fix this so that
+the alpha is non-zero only where you actually have color values for a given
+warped image.</p><p>
+
+Your submission should contain a top-level script named <tt>hw2.m</tt> that
+carries out the complete process along with any other functions you have 
+written.
+
+</p></li><li>
+<h4>Bonus round, 2-band blending: [10 points]</h4>
+Implement a verion of <b>2-band blending</b> as described in class.
+You should only work on this once you've finished the previous part of the
+assignment.  You should submit your final code for this part in a new script
+named <tt>hw2_2band.m</tt> which can be run independently of the previous
+script.<p>
+
+As we described in class, 2-band blending involves splitting the image into two
+frequency bands, low frequencies (given by blurring the image with a large
+gaussian) and the remaining higher frequencies (subtract the blurred from the
+original).  The high frequency images can be blended using the non-blurred
+(binary) alpha mask.  The low frequency images are blended using a feathered
+alpha mask just like you used for part 2.
+</p></li>
+</ol>
+
+<h4>Writeup: [20 points]</h4>
+
+<ol>
+Submit a PDF file that contains the following items:
+
+<p></p><li>Show the final mosaic for one of the provided example image sets. 
+Also show the individual remapped source images after they are warped but
+before they are blended together into the final mosaic (as in the figure above).
+If you have limited memory, you should downsample the images when you load them
+in (use imresize).
+
+<p></p></li><li>Show two mosaics of your own creation, each with at least 3 source
+images. You should use your own camera to take images. Remember that you 
+want to keep the camera center in the same location and simply rotate 
+the camera.  For your writeup, show also the remapped source images before they
+are blended into each final mosaic.
+ 
+<p></p></li><li>Finally, show the results of your 2-band blending by testing it on one
+of the 3 mosaics you used in the previous section of the writeup.  Show the
+whole blended mosaic as well as a side-by-side comparison (with and without
+2-band blending) where you zoom in on an overlap region of the mosaic.  Choose
+a region that shows the benefit of the blending (e.g. less apparent
+ghosting/blurring due to misalignment)
+
+</li></ol>
+
+
+<hr>
+  <h3>To submit</h3>
+    Your submission for this assignment should consist of two files:
+    <ol>
+    <li> writeup <b>firstname_lastname.pdf</b> in pdf format containing results and discussion for all
+    parts of the assignment
+    </li><li> a zip file <b>firstname_lastname.zip</b> containing:
+    <ul>
+    <li> a script <b>hw2.m</b> with code for parts 1 and 2 using one of the example image sets.
+    </li><li> a script <b>hw2_2band.m</b> which contains an version that does 2 band blending.
+    </li><li> any other functions you write which are called by your script.
+    </li></ul>
+    </li></ol>
+    Please <b>do not</b> include the input images.  We will test your code on the example image sets.
+<hr>
+
+<h4>Matlab Tips</h4>
+
+<ol>
+
+<p></p><li> Don't forget the <tt>hold on</tt> command if you want to 
+plot one thing on top of another. For example, if you display an image, you can
+use <tt>hold on;</tt> and <tt>plot(..,..,'r.')</tt> to visualize the points you
+clicked overlayed on top of the image.  
+
+<p></p></li><li> Running <tt>cpselect</tt> is a pain.  Don't do it more than
+once for any pair of images!  You can use the <tt>save</tt> and
+<tt>load</tt> functions to save and restore variables from your
+MATLAB workspace.
+
+<p></p></li><li> I would suggest not using the full size images.  Resize them down so
+that your debugging goes faster.  For your final results, 25% size is
+sufficient.
+
+<p></p></li><li> You can treat the central image the same as every other image by using
+a 3x3 identity matrix as the homography.
+
+</li></ol>
+
+<h4>Extra-credit</h4>
+As detailed in the <a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hw_guide.html"> guidelines</a>, any
+project handed by 11:59 pm on the previous day will receive 5% 
+extra credit.
+<br>
+<br>
+<br>
+<p></p>
+</td></tr></tbody></table>
+
+</body></html>
