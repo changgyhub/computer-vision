@@ -7,12 +7,12 @@ Simple Warmup Examples.
 
 ## 2 Homography Mosaics
 Normal and 2-band homography mosaics of picture sets.<br>
-<img src="https://github.com/irsisyphus/pictures/raw/master/computer-vision/A2.jpg" alt="Homography Mosaics" align=center />
+<img src="https://github.com/irsisyphus/pictures/raw/master/computer-vision/A2.jpg" width=500 alt="Homography Mosaics" align=center />
 
 ## 3 Texture Quilting
 Quilting for textures or bunch of objects.<br>
-<img src="https://github.com/irsisyphus/pictures/raw/master/computer-vision/A3.jpg" alt="Texture Quilting" align=center />
+<img src="https://github.com/irsisyphus/pictures/raw/master/computer-vision/A3.jpg" width=500 alt="Texture Quilting" align=center />
 
 ## 4 Object Detection
 Naive Object Detection using hog.<br>
-<img src="https://github.com/irsisyphus/pictures/raw/master/computer-vision/A4.jpg" alt="Object Detection" align=center />
+<img src="https://github.com/irsisyphus/pictures/raw/master/computer-vision/A4.jpg" width=500 alt="Object Detection" align=center />
