@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- saved from url=(0049)http://www.ics.uci.edu/~fowlkes/class/cs116/hwk5/ -->
+<html class="gr__ics_uci_edu"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>HW5: </title>
+  </head>
+
+  <body data-gr-c-s-loaded="true">
+  <table><tbody><tr><td width="600">
+     
+    <h1>HW5: Face Morphing</h1>
+    <h3> Due Monday, March 20th in EEE DropBox at 11:59 pm </h3>
+    <hr>
+
+    In this assignment you will produce a "morph" animation of one face
+    into another.
+    <ul>
+      <li><a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hwk5/downloads/">downloads</a> contains some skeleton code for you to start with
+    </li></ul>
+ 
+    <h4>Programming [90 points]</h4>
+
+    Write the following 3 functions (each in their own file) with the following
+    prototypes to perform the morph.
+    
+    <ol>
+      
+	<hr>
+	<p></p><li><b>[30 points]</b> 
+  This function computes the affine transformation which maps points from tri1
+  to tri2.  You will use this to map pixels inside each triangle of your mesh.
+
+	<blockquote><tt><pre>  function T = ttform(tri1,tri2)
+  %
+  % compute the transformation T which maps points
+  % of triangle1 to triangle2 
+  %
+  %  tri1 : 2x3 matrix containing coordinates of triangle 1
+  %  tri2 : 2x3 matrix containing coordinates of triangle 2
+  %
+  %  T : the resulting transformation, should be a 3x3
+  %      matrix which operates on points described in 
+  %      homogeneous coordinates 
+  %
+	</pre></tt></blockquote>
+	<hr>
+
+	<p></p></li><li><b>[30 points]</b> 
+  This function computes a warped image starting from a source image and a
+  set of triangulated keypoints.  You will want to use MATLAB's built in
+  function for interpolation <b>interp2</b> to perform the warping for each
+  triangle.  In order to determine which pixels fall in a given triangle
+  we will use <b>poly2mask</b>.
+  
+	<blockquote><tt><pre>  function I_warped = warp(I_source,pts_source,pts_target,tri)
+  %
+  % I_source : color source image  (HxWx3)
+  % pts_source : coordinates of keypoints in the source image  (2xN)
+  % pts_target : coordinates of where the keypoints end up after the warp (2xN)
+  % tri : list of triangles (triples of indices into pts_source)  (Kx3)
+  %       for example, the coordinates of the kth triangle should be 
+  %       given by the expression:
+  %
+  %           pts_source(:,tri(k,:))
+  % 
+  %
+  % I_warped : resulting warped image, same size as source image (HxWx3)
+  %
+</pre></tt></blockquote>
+  <hr>
+
+	<p></p></li><li><b>[30 points]</b> 
+  Write a script <b>morph.m</b> that loads in the source and target image
+  and produces a morph between them.  The script should let the user click on 
+  corresponding keypoints in each image to indicate correspondences.  It should
+  then triangulate the set of points (using the MATLAB function
+  <b>delaunay</b>) and then produce a morph sequence by repeatedly warping the
+  source and target images to an intermediate image and blending them.
+
+  NOTE: you may want to save user clicks out to a file and just load them
+  in so that you don't have to keep recreating them while testing your other 
+  code.
+
+	<blockquote><tt><pre>  %
+  % morphing script
+  %
+
+  % load in two images...
+
+  % get user clicks on keypoints
+
+  % generate triangulation 
+  tri = delaunay(...) 
+
+  % now produce a nframe morph sequence
+  nframes = 30;
+  for fnum = 1:nframes
+    t = (fnum-1)/(nframes-1);
+    pts_target = (1-t)*pts_img1 + t*pts_img2;                % intermediate key-point locations
+    I1_warp = warp(I1,pts_img1,pts_target,tri);              % warp image 1
+    I2_warp = ...                                            % warp image 2
+    Iresult = (1-t)*I1_warp + t*I2_warp;                     % blend the two warped images
+
+    figure(1); clf; imagesc(Iresult); axis image; drawnow;   % display the frame
+
+    imwrite(Iresult,sprintf('frame_%2.2d.jpg',fnum),'jpg')   % save the frame to a jpg file
+  end
+  </pre></tt></blockquote>
+	<hr>
+
+    </li></ol>
+
+    <h4>Writeup and Results [10 points]</h4>
+    For the writeup you should include results for two different morph
+    sequences of your own choosing.  At least one sequence should be a
+    morph between two faces.  For the second sequence you can try using
+    a different object if you prefer.
+
+    For each sequence your writeup should show a 5 frame version of the
+    morphing sequence where frame 1 is the first image, frame 5 is the last
+    image and you show three equally spaced intermediate frames.
+    
+    
+    <h4>Hints and More Discussion</h4>
+    You will need to define pairs of corresponding points on the two
+    images by hand (the more points, the better the morph, generally). The
+    simplest way is probably to use the <em>cpselect</em> tool or write your own 
+    tool using ginput and plot commands (with hold on and hold off). Rember
+    to click on the points in the same order!
+    
+    Now, you need to provide a triangulation of these points that will be used
+    for morphing. You can compute a triangulation any way you like, or even
+    define it by hand. A Delaunay triangulation (see delaunay and related
+    functions) is a good choice since it does not produce overly skinny
+    triangles. You can compute the Delaunay triangulation on either of the
+    point sets (but not both -- the triangulation has to be the same throughout
+    the morph!).  A reasonable approach is to compute the triangulation at
+    midway shape (i.e. mean of the two point sets) to lessen the potential
+    triangle deformations. <p> 
+
+    In order to get nice looking results you will probably want to click on
+    lots of corresponding points (~20).  You should also add the 4 corners
+    of the image to your list of source and target points so that the background
+    gets mapped appropriately.</p><p>
+
+    MATLAB has a function <b>poly2mask</b> which takes a list of points
+    defining a polygon and returns a binary image indicating which pixels are
+    inside the polygon and which are outside.  You should use this function 
+    in order to determine which pixels fall inside each triangle so you can
+    warp them appropriately.
+
+    </p><h4>Extra-credit</h4>
+    As detailed in the <a href="http://www.ics.uci.edu/~fowlkes/class/cs116/hw_guide.html">guidelines</a>, any project
+    handed by 11:59 pm on the previous day, will receive 5% extra credit.
+    <br>
+    <br>
+  </td></tr></tbody></table>
+  
+
+</body></html>
