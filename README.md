@@ -23,4 +23,4 @@ Naive Object Detection using hog.
 ### 5 Face Morphing
 Morphing from one object to another.
 
-<img src="https://github.com/irsisyphus/pictures/raw/master/computer-vision/A5.jpg" alt="Face Morphing"/>
+<img src="https://github.com/irsisyphus/pictures/raw/master/computer-vision/A5.jpg" height=600 alt="Face Morphing"/>
