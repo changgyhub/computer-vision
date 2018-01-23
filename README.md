@@ -1,5 +1,9 @@
 # Computer Vision
-Implementation of Computer Vision Models in Matlab, for UCI Course CS161 Computational Photography and Vision.<br>
+Implementation of Computer Vision Models in Matlab, for UCI Course CS 161 Computational Photography and Vision.<br>
+
+### Notes
+* This is an assignment for UCI Course CS 161. The lecturer (and/or the tutors) owns the copyright of the assignment requirements.
+* Do not copy contents of this repo for course assignments. You should take the responsibility for any form of plagiarism.
 
 ### 1. Warmup, Average Images and Demosaic
 
